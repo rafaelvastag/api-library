@@ -2,6 +2,7 @@ package com.rafaelvastag.api.library.api.resource;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rafaelvastag.api.library.dto.BookDTO;
+import com.rafaelvastag.api.library.exception.BusinessException;
 import com.rafaelvastag.api.library.model.entity.Book;
 import com.rafaelvastag.api.library.service.BookService;
 
@@ -42,7 +44,7 @@ class BookControllerTest {
 	@DisplayName("Should create a book")
 	void createBookTest() throws Exception {
 
-		BookDTO book = BookDTO.builder().author("Author").title("my book").isbn("123456789").build();
+		BookDTO book = createNewBook();
 
 		Book savedBook = Book.builder().id(10L).author("Author").title("my book").isbn("123456789").build();
 
@@ -65,12 +67,36 @@ class BookControllerTest {
 	void createInvalidBookTest() throws Exception {
 
 		String json = new ObjectMapper().writeValueAsString(new BookDTO());
-		
+
 		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BOOK_API)
 				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(json);
 
 		mvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest());
 
+	}
+
+	@Test
+	@DisplayName("Shouldn't create a new book register if already have a book with the ISBN indicated")
+	void createBookWithDuplicatedIsbn() throws Exception {
+
+		BookDTO book = createNewBook();
+		String json = new ObjectMapper().writeValueAsString(book);
+		String errorMessage = "ISBN exists.";
+
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.post(BOOK_API)
+				.contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON).content(json);
+
+		BDDMockito.given(service.save(Mockito.any(Book.class))).willThrow(new BusinessException(errorMessage));
+
+		mvc.perform(request).andExpect(MockMvcResultMatchers.status().isBadRequest())
+				.andExpect(jsonPath("errors", Matchers.hasSize(1)))
+				.andExpect(jsonPath("errors[0]").value(errorMessage));
+
+	}
+
+	private BookDTO createNewBook() {
+		BookDTO book = BookDTO.builder().author("Author").title("my book").isbn("123456789").build();
+		return book;
 	}
 
 }
