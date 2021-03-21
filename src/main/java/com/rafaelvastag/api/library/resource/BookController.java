@@ -51,22 +51,22 @@ public class BookController {
 
 		return modelMapper.map(entity, BookDTO.class);
 	}
-	
+
 	@PutMapping("{id}")
-	public BookDTO update(@PathVariable Long id, @RequestBody BookDTO bookDTO) {
-		Book book = service.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-		book.setAuthor(bookDTO.getAuthor());
-		book.setTitle(bookDTO.getTitle());
-		book = service.update(book);
-		
-		return modelMapper.map(book, BookDTO.class);
+	public BookDTO update(@PathVariable Long id, @RequestBody BookDTO bookDTO) throws Exception {
+		return service.findById(id).map(book -> {
+			book.setAuthor(bookDTO.getAuthor());
+			book.setTitle(bookDTO.getTitle());
+			book = service.update(book);
+			return modelMapper.map(book, BookDTO.class);
+		}).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
 
 	@DeleteMapping("{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@PathVariable Long id) {
 		Book book = service.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
-		
+
 		service.delete(book);
 	}
 
