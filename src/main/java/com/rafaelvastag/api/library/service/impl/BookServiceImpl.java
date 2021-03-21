@@ -1,5 +1,7 @@
 package com.rafaelvastag.api.library.service.impl;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 
 import com.rafaelvastag.api.library.exception.BusinessException;
@@ -23,6 +25,22 @@ public class BookServiceImpl implements BookService{
 			throw new BusinessException("ISBN exists.");
 		}
 		
+		return repository.save(book);
+	}
+
+	@Override
+	public Optional<Book> findById(Long id) {
+		return repository.findById(id);
+	}
+
+	@Override
+	public void delete(Book book) {
+		repository.delete(book);
+		
+	}
+
+	@Override
+	public Book update(Book book) {
 		return repository.save(book);
 	}
 
