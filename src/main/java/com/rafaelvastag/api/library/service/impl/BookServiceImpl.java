@@ -10,21 +10,21 @@ import com.rafaelvastag.api.library.model.repository.BookRepository;
 import com.rafaelvastag.api.library.service.BookService;
 
 @Service
-public class BookServiceImpl implements BookService{
-	
+public class BookServiceImpl implements BookService {
+
 	private BookRepository repository;
-	
+
 	public BookServiceImpl(BookRepository repo) {
 		this.repository = repo;
 	}
 
 	@Override
 	public Book save(Book book) {
-		
+
 		if (repository.existsByIsbn(book.getIsbn())) {
 			throw new BusinessException("ISBN exists.");
 		}
-		
+
 		return repository.save(book);
 	}
 
@@ -35,12 +35,18 @@ public class BookServiceImpl implements BookService{
 
 	@Override
 	public void delete(Book book) {
-		repository.delete(book);
-		
+		if (book == null  || book.getId() == null) {
+			throw new IllegalArgumentException("Book invalid");
+		}
+		this.repository.delete(book);
 	}
 
 	@Override
 	public Book update(Book book) {
+		if (book == null  || book.getId() == null) {
+			throw new IllegalArgumentException("Book invalid");
+		}
+		
 		return repository.save(book);
 	}
 
