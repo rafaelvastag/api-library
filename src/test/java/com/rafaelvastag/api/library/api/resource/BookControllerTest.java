@@ -2,6 +2,7 @@ package com.rafaelvastag.api.library.api.resource;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 import org.hamcrest.Matchers;
@@ -14,6 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -85,7 +89,7 @@ class BookControllerTest {
 
 		// Scenery
 		String json = new ObjectMapper().writeValueAsString(createNewBook());
-		Book savedBook = Book.builder().id(10L).author("Author").title("my book").isbn("123456789").build();
+		Book savedBook = Book.builder().id(10L).author("Author").title("my book").isbn("123456").build();
 
 		BDDMockito.given(service.save(Mockito.any(Book.class))).willReturn(savedBook);
 
@@ -184,10 +188,8 @@ class BookControllerTest {
 		BDDMockito.given(service.update(updatingBook)).willReturn(updatingBook);
 
 		// Execution
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(BOOK_API.concat("/" + id))
-				.content(json)
-				.accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON);
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(BOOK_API.concat("/" + id)).content(json)
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
 
 		// Assertion
 		mvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk()).andExpect(jsonPath("id").value(id))
@@ -207,18 +209,40 @@ class BookControllerTest {
 		BDDMockito.given(service.findById(Mockito.anyLong())).willReturn(Optional.empty());
 
 		// Execution
-		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(BOOK_API.concat("/" + 1L))
-				.content(json)
-				.accept(MediaType.APPLICATION_JSON)
-				.contentType(MediaType.APPLICATION_JSON);
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.put(BOOK_API.concat("/" + 1L)).content(json)
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
 
 		// Assertion
 		mvc.perform(request).andExpect(MockMvcResultMatchers.status().isNotFound());
 
 	}
 
+	@Test
+	@DisplayName("Should find books")
+	@SuppressWarnings("unchecked")
+	void findBooksWithPaginationTest() throws Exception {
+
+		// Scenery
+		Long id = 11L;
+		Book book = Book.builder().id(id).title(createNewBook().getTitle()).author(createNewBook().getAuthor())
+				.isbn(createNewBook().getIsbn()).build();
+		BDDMockito.given(service.find(Mockito.any(Book.class), Mockito.any(Pageable.class)))
+				.willReturn(new PageImpl(Arrays.asList(book), PageRequest.of(0, 1), 1L));
+		String queryString = String.format("?title=%s&author=%s&page=0&size=100", book.getTitle(), book.getAuthor());
+
+		// Execution
+		MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get(BOOK_API.concat(queryString))
+				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON);
+
+		// Assertion
+		mvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk())
+				.andExpect(jsonPath("content", Matchers.hasSize(1))).andExpect(jsonPath("totalElements").value(1))
+				.andExpect(jsonPath("pageable.pageSize").value(100))
+				.andExpect(jsonPath("pageable.pageNumber").value(0));
+	}
+
 	private BookDTO createNewBook() {
-		BookDTO book = BookDTO.builder().author("AuthorDTO").title("my bookDTO").isbn("123456").build();
+		BookDTO book = BookDTO.builder().author("Author").title("my book").isbn("123456").build();
 		return book;
 	}
 

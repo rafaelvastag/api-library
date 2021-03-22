@@ -2,6 +2,8 @@ package com.rafaelvastag.api.library.api.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import org.assertj.core.api.Assertions;
@@ -11,6 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
@@ -171,6 +178,29 @@ class BookServiceTest {
 
 		// Assertion
 		Mockito.verify(repository, Mockito.never()).save(book);
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	@DisplayName("Should filter books by properties")
+	void findBookTest() {
+		// Scenery
+		Book book = createNewBook();
+		List<Book> listBooks = Arrays.asList(book);
+		PageRequest pageRequest = PageRequest.of(0, 10);
+		
+		Page<Book> page = new PageImpl<Book>(listBooks, PageRequest.of(0, 10), 1L);
+		Mockito.when(repository.findAll((Mockito.any(Example.class)), Mockito.any(Pageable.class))).thenReturn(page);
+		
+		// Execution
+		Page<Book> result = service.find(book, pageRequest);
+		
+		// Assertion
+		assertThat(result.getTotalElements()).isEqualTo(1);
+		assertThat(result.getContent()).isEqualTo(listBooks);
+		assertThat(result.getPageable().getPageNumber()).isZero();
+		assertThat(result.getPageable().getPageSize()).isEqualTo(10);
+		
 	}
 
 	private Book createNewBook() {
