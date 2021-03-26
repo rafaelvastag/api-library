@@ -30,11 +30,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rafaelvastag.api.library.dto.BookDTO;
 import com.rafaelvastag.api.library.exception.BusinessException;
 import com.rafaelvastag.api.library.model.entity.Book;
+import com.rafaelvastag.api.library.resource.BookController;
 import com.rafaelvastag.api.library.service.BookService;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest
+@WebMvcTest(controllers = BookController.class)
 @AutoConfigureMockMvc
 class BookControllerTest {
 
