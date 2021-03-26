@@ -1,5 +1,7 @@
 package com.rafaelvastag.api.library.service.impl;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -15,20 +17,20 @@ import com.rafaelvastag.api.library.service.LoanService;
 
 @Service
 public class LoanServiceImpl implements LoanService {
-	
+
 	private LoanRepository repository;
-	
+
 	public LoanServiceImpl(LoanRepository repository) {
 		this.repository = repository;
 	}
 
 	@Override
 	public Loan save(Loan loan) {
-		
+
 		if (repository.existsByBookAndNotReturned(loan.getBook())) {
 			throw new BusinessException("Book already loaned");
 		}
-		
+
 		return repository.save(loan);
 	}
 
@@ -51,6 +53,14 @@ public class LoanServiceImpl implements LoanService {
 	@Override
 	public Page<Loan> getLoansByBook(Book book, Pageable pageable) {
 		return repository.findByBook(book, pageable);
+	}
+
+	@Override
+	public List<Loan> getAllLateLoans() {
+		final Integer loanMaxDays = 4;
+		LocalDate threeDaysAgo = LocalDate.now().minusDays(loanMaxDays);
+
+		return repository.findByLoanDateLessThanAndNotReturned(threeDaysAgo);
 	}
 
 }

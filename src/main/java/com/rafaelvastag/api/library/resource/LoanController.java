@@ -65,7 +65,7 @@ public class LoanController {
 	public Long create(@RequestBody LoanDTO loan) {
 		Book book = bookService.findBookByIsbn(loan.getIsbn())
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Book not found for this ISBN"));
-		Loan entity = Loan.builder().customer(loan.getCustomerName()).book(book).loanDate(LocalDate.now()).build();
+		Loan entity = Loan.builder().customer(loan.getCustomerName()).book(book).emailCustomer(loan.getCustomerName()).loanDate(LocalDate.now()).build();
 
 		entity = service.save(entity);
 

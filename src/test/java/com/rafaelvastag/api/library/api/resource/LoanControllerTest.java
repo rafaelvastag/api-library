@@ -164,7 +164,7 @@ class LoanControllerTest {
 		verify(loanService, Mockito.times(0)).updateLoan(Mockito.any(Loan.class));
 
 	}
-	
+
 	@Test
 	@DisplayName("Should find loans")
 	@SuppressWarnings("unchecked")
@@ -175,7 +175,7 @@ class LoanControllerTest {
 
 		BDDMockito.given(loanService.find(Mockito.any(LoanFilterDTO.class), Mockito.any(Pageable.class)))
 				.willReturn(new PageImpl(Arrays.asList(loan), PageRequest.of(0, 10), 1L));
-		
+
 		String queryString = String.format("?isbn=%s&customerName=%s&page=0&size=10", loan.getBook().getIsbn(),
 				loan.getCustomer());
 
@@ -186,16 +186,17 @@ class LoanControllerTest {
 		// Assertion
 		mvc.perform(request).andExpect(MockMvcResultMatchers.status().isOk())
 				.andExpect(jsonPath("content", Matchers.hasSize(1))).andExpect(jsonPath("totalElements").value(1))
-				.andExpect(jsonPath("pageable.pageSize").value(10))
-				.andExpect(jsonPath("pageable.pageNumber").value(0));
+				.andExpect(jsonPath("pageable.pageSize").value(10)).andExpect(jsonPath("pageable.pageNumber").value(0));
 	}
 
 	private Loan createLoan(Book book) {
-		return Loan.builder().id(1L).customer("Customer Name").book(book).loanDate(LocalDate.now()).build();
+		return Loan.builder().id(1L).customer("Customer Name").emailCustomer("customer@email.com").book(book)
+				.loanDate(LocalDate.now()).build();
 	}
 
 	private LoanDTO createLoanDTO() {
-		return LoanDTO.builder().customerName("Customer Name").isbn("123456").build();
+		return LoanDTO.builder().customerName("Customer Name").emailCustomer("customer@email.com").isbn("123456")
+				.build();
 	}
 
 	private Book createNewEntityBook(Long id) {
