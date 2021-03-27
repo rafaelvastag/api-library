@@ -28,11 +28,16 @@ import com.rafaelvastag.api.library.model.entity.Loan;
 import com.rafaelvastag.api.library.service.BookService;
 import com.rafaelvastag.api.library.service.LoanService;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
 
 @RestController
 @RequestMapping("/api/books")
 @AllArgsConstructor
+@Api("Book API")
 public class BookController {
 
 	private final BookService service;
@@ -41,6 +46,7 @@ public class BookController {
 
 	@GetMapping("{id}")
 	@ResponseStatus(HttpStatus.OK)
+	@ApiOperation("Find book by id")
 	public BookDTO getSingleBook(@PathVariable(name = "id") Long id) {
 		return service.findById(id).map(book -> modelMapper.map(book, BookDTO.class))
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
@@ -59,6 +65,7 @@ public class BookController {
 	}
 
 	@GetMapping("{id}/loans")
+	@ApiOperation("Obtains a list of loans by book")
 	public Page<LoanDTO> loansByBook(@PathVariable Long id, Pageable pageable) {
 		Book book = service.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
@@ -78,6 +85,7 @@ public class BookController {
 
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
+	@ApiOperation("Create a new book in storage")
 	public BookDTO create(@RequestBody @Valid BookDTO book) {
 		Book entity = modelMapper.map(book, Book.class);
 		entity = service.save(entity);
@@ -86,6 +94,7 @@ public class BookController {
 	}
 
 	@PutMapping("{id}")
+	@ApiOperation("Update a registered book")
 	public BookDTO update(@PathVariable Long id, @RequestBody BookDTO bookDTO) throws Exception {
 		return service.findById(id).map(book -> {
 			book.setAuthor(bookDTO.getAuthor());
@@ -97,6 +106,10 @@ public class BookController {
 
 	@DeleteMapping("{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
+	@ApiOperation("Delete a book by id")
+	@ApiResponses({
+		@ApiResponse(code = 204, message = "Book succesfully deleted")
+	})
 	public void delete(@PathVariable Long id) {
 		Book book = service.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
