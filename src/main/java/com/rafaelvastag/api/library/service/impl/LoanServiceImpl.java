@@ -55,6 +55,7 @@ public class LoanServiceImpl implements LoanService {
 		return repository.findByBook(book, pageable);
 	}
 
+	
 	@Override
 	public List<Loan> getAllLateLoans() {
 		final Integer loanMaxDays = 4;
