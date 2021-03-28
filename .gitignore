@@ -32,3 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 /library-api-file.log
+/library-api-file.log.2021-03-27.0.gz

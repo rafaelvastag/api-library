@@ -1,5 +1,18 @@
+coverage:
+  precision: 1
+  round: down
+  range: "50...80"
+  status:
+    project:
+      default:
+        # Do not fail PRs if the code coverage drops.
+        target: 0%
+        threshold: null
+        base: auto
+
 ignore:
-  - "library-api/src/main/java/com/rafaelvastag/api/library/config/**/*"
-  - "library-api/src/main/java/com/rafaelvastag/api/library/dto/**/*"
-  - "library-api/src/main/java/com/rafaelvastag/api/library/errors/**/*"
-  - "library-api/src/main/java/com/rafaelvastag/api/library/exception/**/*"
+  # Ignore coverage for generated and third party code.
+  - "src/main/java/com/rafaelvastag/api/library/config/**/*"
+  - "src/main/java/com/rafaelvastag/api/library/dto/**/*"
+  - "src/main/java/com/rafaelvastag/api/library/errors/**/*"
+  - "src/main/java/com/rafaelvastag/api/library/exception/**/*"
