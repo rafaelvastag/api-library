@@ -30,11 +30,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rafaelvastag.api.library.dto.BookDTO;
 import com.rafaelvastag.api.library.exception.BusinessException;
 import com.rafaelvastag.api.library.model.entity.Book;
+import com.rafaelvastag.api.library.resource.BookController;
 import com.rafaelvastag.api.library.service.BookService;
+import com.rafaelvastag.api.library.service.LoanService;
 
 @ExtendWith(SpringExtension.class)
 @ActiveProfiles("test")
-@WebMvcTest
+@WebMvcTest(controllers = BookController.class)
 @AutoConfigureMockMvc
 class BookControllerTest {
 
@@ -45,6 +47,9 @@ class BookControllerTest {
 
 	@MockBean
 	BookService service;
+	
+	@MockBean
+	LoanService loanService;
 
 	@Test
 	@DisplayName("Should return status resource not found when no book exists with that id")
