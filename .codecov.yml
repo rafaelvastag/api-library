@@ -1,5 +1,5 @@
 ignore:
-  - "library-api/src/main/java/com/rafaelvastag/api/library/config"
-  - "library-api/src/main/java/com/rafaelvastag/api/library/dto"
-  - "library-api/src/main/java/com/rafaelvastag/api/library/errors"
-  - "library-api/src/main/java/com/rafaelvastag/api/library/exception"
+  - "library-api/src/main/java/com/rafaelvastag/api/library/config/**/*"
+  - "library-api/src/main/java/com/rafaelvastag/api/library/dto/**/*"
+  - "library-api/src/main/java/com/rafaelvastag/api/library/errors/**/*"
+  - "library-api/src/main/java/com/rafaelvastag/api/library/exception/**/*"
