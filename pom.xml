@@ -135,6 +135,16 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<excludes>
+						<exclude>**/*com/rafaelvastag/api/library/LibraryApplication.class</exclude>
+						<exclude>**/*com/rafaelvastag/api/library/config/**</exclude>
+						<exclude>**/*com/rafaelvastag/api/library/dto/**</exclude>
+						<exclude>**/*com/rafaelvastag/api/library/exception/**</exclude>
+						<exclude>**/*com/rafaelvastag/api/library/model/entity/**</exclude>
+						<exclude>**/*com/rafaelvastag/api/library/errors/**</exclude>
+					</excludes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
