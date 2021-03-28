@@ -33,11 +33,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/books")
 @AllArgsConstructor
 @Api("Book API")
+@Slf4j
 public class BookController {
 
 	private final BookService service;
@@ -48,6 +50,7 @@ public class BookController {
 	@ResponseStatus(HttpStatus.OK)
 	@ApiOperation("Find book by id")
 	public BookDTO getSingleBook(@PathVariable(name = "id") Long id) {
+		log.info("Getting Book details for id: { } ", id);
 		return service.findById(id).map(book -> modelMapper.map(book, BookDTO.class))
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 	}
@@ -61,7 +64,7 @@ public class BookController {
 		List<BookDTO> list = result.getContent().stream().map(entity -> modelMapper.map(entity, BookDTO.class))
 				.collect(Collectors.toList());
 
-		return new PageImpl<BookDTO>(list, pageRequest, result.getTotalElements());
+		return new PageImpl<>(list, pageRequest, result.getTotalElements());
 	}
 
 	@GetMapping("{id}/loans")
@@ -87,9 +90,11 @@ public class BookController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@ApiOperation("Create a new book in storage")
 	public BookDTO create(@RequestBody @Valid BookDTO book) {
+		log.info("Creating book for isbn: { } ", book.getIsbn());
 		Book entity = modelMapper.map(book, Book.class);
 		entity = service.save(entity);
 
+		log.info("Book created");
 		return modelMapper.map(entity, BookDTO.class);
 	}
 
@@ -107,10 +112,9 @@ public class BookController {
 	@DeleteMapping("{id}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@ApiOperation("Delete a book by id")
-	@ApiResponses({
-		@ApiResponse(code = 204, message = "Book succesfully deleted")
-	})
+	@ApiResponses({ @ApiResponse(code = 204, message = "Book succesfully deleted") })
 	public void delete(@PathVariable Long id) {
+		log.info("Deleting book for id: { }", id);
 		Book book = service.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
 
 		service.delete(book);
