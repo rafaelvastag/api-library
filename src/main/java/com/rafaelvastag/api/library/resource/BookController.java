@@ -100,7 +100,7 @@ public class BookController {
 
 	@PutMapping("{id}")
 	@ApiOperation("Update a registered book")
-	public BookDTO update(@PathVariable Long id, @RequestBody BookDTO bookDTO) throws Exception {
+	public BookDTO update(@PathVariable Long id, @RequestBody @Valid BookDTO bookDTO) throws Exception {
 		return service.findById(id).map(book -> {
 			book.setAuthor(bookDTO.getAuthor());
 			book.setTitle(bookDTO.getTitle());
