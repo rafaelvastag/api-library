@@ -31,3 +31,4 @@ build/
 
 ### VS Code ###
 .vscode/
+/library-api-file.log

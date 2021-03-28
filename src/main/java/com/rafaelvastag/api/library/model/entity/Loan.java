@@ -1,14 +1,14 @@
 package com.rafaelvastag.api.library.model.entity;
 
-import java.util.List;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,26 +17,28 @@ import lombok.NoArgsConstructor;
 
 @Data
 @Builder
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Entity
-public class Book {
-	
+public class Loan {
+
 	@Id
-	@Column
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@Column
-	private String title;
-
-	@Column
-	private String author;
-
-	@Column
-	private String isbn;
+	@Column(length = 100)
+	private String customer;
 	
-	@OneToMany(mappedBy = "book", fetch = FetchType.LAZY)
-	private List<Loan> loans;
-
+	@Column(name = "customer_email")
+	private String emailCustomer;	
+	
+	@JoinColumn(name = "id_book")
+	@ManyToOne
+	private Book book;
+	
+	@Column
+	private LocalDate loanDate;
+	
+	@Column
+	private Boolean returned;
 }
